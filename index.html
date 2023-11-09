@@ -1,0 +1,111 @@
+<html>
+
+<head>
+    <title>Memory Matching Game</title>
+    <style>
+        .card {
+          width: 100px;
+          height: 100px;
+          background: #EEE;
+          border: 1px solid #999;
+          margin: 5px;
+          display: inline-block;
+          text-align: center;
+          font-size: 24px;
+          cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Memory Matching Game</h1>
+
+    <div id="gameBoard"></div>
+    <button onclick="resetGame()">Reset Game</button>
+
+    <script>
+        let symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']; // Symbols for the cards
+        let cards = symbols.concat(symbols); // Create pairs of symbols
+        
+        let shuffledCards = shuffle(cards); // Shuffle the cards
+        
+        let gameBoard = document.getElementById('gameBoard');
+        
+        shuffledCards.forEach((symbol, index) => {
+          let card = document.createElement('div');
+          card.classList.add('card');
+          card.dataset.index = index;
+          card.dataset.symbol = symbol;
+          card.innerHTML = '?';
+          card.addEventListener('click', handleCardClick);
+          gameBoard.appendChild(card);
+        });
+        
+        let flippedCards = [];
+        let matchedPairs = 0;
+        
+        function handleCardClick(event) {
+          let clickedCard = event.target;
+        
+          if (flippedCards.length < 2 && !flippedCards.includes(clickedCard)) {
+            clickedCard.innerHTML = clickedCard.dataset.symbol;
+            flippedCards.push(clickedCard);
+        
+            if (flippedCards.length === 2) {
+              setTimeout(checkForMatch, 1000);
+            }
+          }
+        }
+        
+        function checkForMatch() {
+          let [card1, card2] = flippedCards;
+        
+          if (card1.dataset.symbol === card2.dataset.symbol) {
+            card1.removeEventListener('click', handleCardClick);
+            card2.removeEventListener('click', handleCardClick);
+            matchedPairs++;
+        
+            if (matchedPairs === symbols.length) {
+              alert('Congratulations! You have matched all pairs.');
+            }
+          } else {
+            card1.innerHTML = '?';
+            card2.innerHTML = '?';
+          }
+        
+          flippedCards = [];
+        }
+        
+        function resetGame() {
+          gameBoard.innerHTML = '';
+          shuffledCards = shuffle(cards);
+          flippedCards = [];
+          matchedPairs = 0;
+        
+          shuffledCards.forEach((symbol, index) => {
+            let card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.index = index;
+            card.dataset.symbol = symbol;
+            card.innerHTML = '?';
+            card.addEventListener('click', handleCardClick);
+            gameBoard.appendChild(card);
+          });
+        }
+        
+        function shuffle(array) {
+          let currentIndex = array.length, temporaryValue, randomIndex;
+        
+          while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+        
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+          }
+        
+          return array;
+        }
+    </script>
+</body>
